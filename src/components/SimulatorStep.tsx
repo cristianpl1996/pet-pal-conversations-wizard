@@ -157,6 +157,19 @@ export function SimulatorStep({ onNext, onBack, config }: SimulatorStepProps) {
             );
           })}
         </div>
+
+        {/* Nota sobre futuras mejoras */}
+        <div className="bg-amber-50 p-4 rounded-lg border border-amber-200 mt-4">
+          <div className="flex items-start space-x-3">
+            <div className="text-amber-500">🧪</div>
+            <div>
+              <h4 className="font-medium text-amber-800">Próximamente</h4>
+              <p className="text-sm text-amber-700">
+                ¿Notaste algo que podrías mejorar? Muy pronto podrás corregir respuestas o agregar ejemplos desde aquí para seguir entrenando tu agente.
+              </p>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Simulador de chat */}

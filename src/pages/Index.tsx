@@ -10,6 +10,7 @@ import { DeployStep } from '@/components/DeployStep';
 
 interface AppConfig {
   objective?: string;
+  clinicType?: string;
   knowledge?: any;
   brands?: string[];
   config?: any;
@@ -54,8 +55,9 @@ const Index = () => {
             subtitle="¿Qué quieres que logre tu agente conversacional?"
           >
             <ObjectiveStep 
-              onNext={(objective) => {
+              onNext={(objective, clinicType) => {
                 updateConfig('objective', objective);
+                updateConfig('clinicType', clinicType);
                 nextStep();
               }} 
             />

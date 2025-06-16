@@ -189,6 +189,19 @@ export function ConfigStep({ onNext, onBack }: ConfigStepProps) {
         </div>
       </div>
 
+      {/* Nota sobre actualizaciones futuras */}
+      <div className="bg-cyan-50 p-4 rounded-lg border border-cyan-200">
+        <div className="flex items-start space-x-3">
+          <div className="text-cyan-500">🔄</div>
+          <div>
+            <h4 className="font-medium text-cyan-800">Tranquilidad total</h4>
+            <p className="text-sm text-cyan-700">
+              Puedes actualizar el conocimiento de tu agente en cualquier momento después del despliegue.
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>
           Atrás

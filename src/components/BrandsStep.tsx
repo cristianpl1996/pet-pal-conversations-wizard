@@ -59,6 +59,37 @@ const veterinaryBrands = [
   }
 ];
 
+const getExampleQuestions = (selectedBrands: string[]) => {
+  const examples = [];
+  
+  if (selectedBrands.includes('hills')) {
+    examples.push("¿Para qué sirve la dieta Hill's i/d?");
+  }
+  if (selectedBrands.includes('royal-canin')) {
+    examples.push("¿Qué diferencia hay entre Royal Canin Gastro y Satiety?");
+  }
+  if (selectedBrands.includes('bayer') || selectedBrands.includes('zoetis')) {
+    examples.push("¿Qué recomiendan contra las pulgas para un perro de 20 kg?");
+  }
+  if (selectedBrands.includes('purina-pro')) {
+    examples.push("¿Cuál es el mejor Pro Plan para un gato senior?");
+  }
+  if (selectedBrands.includes('eukanuba')) {
+    examples.push("¿Eukanuba tiene opciones para perros con alergias?");
+  }
+  
+  // Ejemplos por defecto si no hay marcas específicas
+  if (examples.length === 0) {
+    return [
+      "¿Qué alimento me recomiendan para mi mascota?",
+      "¿Tienen productos para desparasitar?",
+      "¿Cuál es la diferencia entre estas marcas?"
+    ];
+  }
+  
+  return examples.slice(0, 3); // Máximo 3 ejemplos
+};
+
 export function BrandsStep({ onNext, onBack }: BrandsStepProps) {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
 
@@ -69,6 +100,8 @@ export function BrandsStep({ onNext, onBack }: BrandsStepProps) {
         : [...prev, brandId]
     );
   };
+
+  const exampleQuestions = getExampleQuestions(selectedBrands);
 
   return (
     <div className="space-y-6">
@@ -117,6 +150,26 @@ export function BrandsStep({ onNext, onBack }: BrandsStepProps) {
         ))}
       </div>
 
+      {/* Ejemplos dinámicos basados en selección */}
+      {selectedBrands.length > 0 && (
+        <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+          <div className="flex items-start space-x-3">
+            <div className="text-green-500">✅</div>
+            <div>
+              <h4 className="font-medium text-green-800">Basado en tu selección, tu agente podrá responder preguntas como:</h4>
+              <ul className="text-sm text-green-700 mt-2 space-y-1">
+                {exampleQuestions.map((question, index) => (
+                  <li key={index} className="flex items-start">
+                    <span className="mr-2">•</span>
+                    <span className="italic">"{question}"</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="bg-blue-50 p-4 rounded-lg">
         <div className="flex items-start space-x-3">
           <div className="text-blue-500">💡</div>
@@ -125,6 +178,27 @@ export function BrandsStep({ onNext, onBack }: BrandsStepProps) {
             <p className="text-sm text-blue-700">
               Si un cliente pregunta por una marca que no seleccionaste, el agente dirá amablemente que no la manejan y sugerirá alternativas.
             </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Invitación al patrocinio */}
+      <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
+        <div className="flex items-start space-x-3">
+          <div className="text-purple-500">💎</div>
+          <div className="flex-1">
+            <h4 className="font-medium text-purple-800">Oportunidad especial</h4>
+            <p className="text-sm text-purple-700 mb-3">
+              Algunas marcas están patrocinando agentes para clínicas como la tuya. 
+              Puedes solicitar patrocinio o ver beneficios exclusivos.
+            </p>
+            <Button 
+              variant="outline" 
+              size="sm"
+              className="border-purple-300 text-purple-700 hover:bg-purple-100"
+            >
+              Solicitar patrocinio
+            </Button>
           </div>
         </div>
       </div>

@@ -4,7 +4,7 @@ import { Calendar, ShoppingCart, HeadphonesIcon, Stethoscope } from 'lucide-reac
 import { Button } from '@/components/ui/button';
 
 interface ObjectiveStepProps {
-  onNext: (objective: string) => void;
+  onNext: (objective: string, clinicType?: string) => void;
 }
 
 const objectives = [
@@ -38,11 +38,35 @@ const objectives = [
   }
 ];
 
+const clinicTypes = [
+  {
+    id: 'general',
+    title: 'General',
+    description: 'Clínica veterinaria con servicios básicos'
+  },
+  {
+    id: 'specialized',
+    title: 'Especializada',
+    description: 'Por ejemplo: cirugía, dermatología, cardiología'
+  },
+  {
+    id: 'petshop',
+    title: 'Petshop con servicios',
+    description: 'Tienda de mascotas con servicios veterinarios'
+  },
+  {
+    id: 'other',
+    title: 'Otro',
+    description: 'Hospital veterinario u otra configuración'
+  }
+];
+
 export function ObjectiveStep({ onNext }: ObjectiveStepProps) {
   const [selectedObjective, setSelectedObjective] = useState<string>('');
+  const [selectedClinicType, setSelectedClinicType] = useState<string>('');
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="text-center mb-8">
         <div className="text-6xl mb-4">🎯</div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
@@ -84,9 +108,47 @@ export function ObjectiveStep({ onNext }: ObjectiveStepProps) {
         })}
       </div>
 
+      {/* Tipo de clínica */}
+      {selectedObjective && (
+        <div className="space-y-4">
+          <div className="text-center">
+            <h3 className="text-lg font-medium text-gray-800 mb-2">
+              ¿Qué tipo de clínica tienes?
+            </h3>
+            <p className="text-gray-600 text-sm">
+              Esto nos ayudará a personalizar mejor las respuestas de tu agente
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            {clinicTypes.map((type) => (
+              <div
+                key={type.id}
+                onClick={() => setSelectedClinicType(type.id)}
+                className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
+                  selectedClinicType === type.id
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="flex items-center space-x-3">
+                  <div className={`w-4 h-4 rounded-full border-2 ${
+                    selectedClinicType === type.id ? 'bg-blue-500 border-blue-500' : 'border-gray-300'
+                  }`} />
+                  <div>
+                    <h4 className="font-medium text-gray-800">{type.title}</h4>
+                    <p className="text-sm text-gray-600">{type.description}</p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       <div className="flex justify-center pt-6">
         <Button
-          onClick={() => onNext(selectedObjective)}
+          onClick={() => onNext(selectedObjective, selectedClinicType)}
           disabled={!selectedObjective}
           className="px-8 py-3 text-lg bg-blue-500 hover:bg-blue-600"
         >

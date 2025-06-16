@@ -8,6 +8,16 @@ interface DeployStepProps {
   config: any;
 }
 
+const getClinicTypeLabel = (type: string) => {
+  const types = {
+    'general': 'General',
+    'specialized': 'Especializada',
+    'petshop': 'Petshop con servicios',
+    'other': 'Otro'
+  };
+  return types[type as keyof typeof types] || 'No especificado';
+};
+
 export function DeployStep({ onBack, onEdit, config }: DeployStepProps) {
   const handleDeploy = () => {
     // Aquí iría la lógica real de despliegue
@@ -27,11 +37,16 @@ export function DeployStep({ onBack, onEdit, config }: DeployStepProps) {
       </div>
 
       <div className="bg-gray-50 rounded-xl p-6 space-y-6">
-        {/* Objetivo */}
+        {/* Objetivo y tipo de clínica */}
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-semibold text-gray-800">Objetivo principal</h3>
-            <p className="text-gray-600 capitalize">{config.objective || 'No definido'}</p>
+            <p className="text-gray-600 capitalize">
+              {config.objective || 'No definido'}
+              {config.clinicType && (
+                <span className="text-gray-500"> • {getClinicTypeLabel(config.clinicType)}</span>
+              )}
+            </p>
           </div>
           <Button variant="outline" size="sm" onClick={() => onEdit(0)}>
             <Edit className="w-4 h-4 mr-1" />
