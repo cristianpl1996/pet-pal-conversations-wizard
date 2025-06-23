@@ -1,11 +1,12 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { Brain, Upload, CheckCircle, Sparkles, Crown, Link } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Upload, Globe, FileText, Star, Heart } from 'lucide-react';
 
 interface VoiceKnowledgeStepProps {
   onNext: (knowledge: any) => void;
@@ -13,216 +14,236 @@ interface VoiceKnowledgeStepProps {
   existingBrands?: string[];
 }
 
-export function VoiceKnowledgeStep({ onNext, onBack, existingBrands }: VoiceKnowledgeStepProps) {
-  const [additionalKnowledge, setAdditionalKnowledge] = useState('');
-  const [useExistingBrands, setUseExistingBrands] = useState(true);
-  const [sponsoredKnowledge, setSponsoredKnowledge] = useState({
-    'Hill\'s': true,
-    'Royal Canin': false,
-    'Purina Pro Plan': true,
-    'Bayer': false
-  });
+export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: VoiceKnowledgeStepProps) {
+  const [knowledgeType, setKnowledgeType] = useState<string>('');
+  const [textKnowledge, setTextKnowledge] = useState('');
+  const [websiteUrl, setWebsiteUrl] = useState('');
+  const [enabledSponsoredBrands, setEnabledSponsoredBrands] = useState<string[]>([]);
+
+  // Mock sponsored knowledge blocks
+  const sponsoredBrands = [
+    { id: 'hills', name: "Hill's", description: "Nutrición terapéutica", sponsor: true },
+    { id: 'royal-canin', name: "Royal Canin", description: "Nutrición especializada", sponsor: true },
+    { id: 'purina', name: "Purina Pro Plan", description: "Nutrición avanzada", sponsor: false },
+    { id: 'bayer', name: "Bayer", description: "Productos farmacéuticos", sponsor: true }
+  ];
+
+  const toggleSponsoredBrand = (brandId: string) => {
+    setEnabledSponsoredBrands(prev => 
+      prev.includes(brandId)
+        ? prev.filter(id => id !== brandId)
+        : [...prev, brandId]
+    );
+  };
 
   const handleNext = () => {
     const knowledge = {
-      useExistingBrands,
-      existingBrands: useExistingBrands ? existingBrands : [],
-      additionalKnowledge,
-      sponsoredKnowledge
+      type: knowledgeType,
+      content: knowledgeType === 'text' ? textKnowledge : websiteUrl,
+      existingBrands,
+      sponsoredBrands: enabledSponsoredBrands
     };
     onNext(knowledge);
   };
 
-  const toggleSponsoredKnowledge = (brand: string) => {
-    setSponsoredKnowledge(prev => ({
-      ...prev,
-      [brand]: !prev[brand]
-    }));
+  const isValid = () => {
+    if (knowledgeType === 'text') return textKnowledge.trim().length > 0;
+    if (knowledgeType === 'website') return websiteUrl.trim().length > 0;
+    if (knowledgeType === 'file') return true;
+    return enabledSponsoredBrands.length > 0; // Allow to continue if only sponsored brands are selected
   };
-
-  const brandCount = existingBrands?.length || 0;
 
   return (
     <div className="space-y-6">
       <div className="text-center mb-8">
         <div className="text-6xl mb-4">🧠</div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          Conecta el conocimiento
+          Integración de Conocimiento
         </h2>
         <p className="text-gray-600">
-          Tu agente heredará el conocimiento ya configurado y podrás agregar más
+          Conecta el conocimiento de tu clínica y activa bloques patrocinados por marcas
         </p>
       </div>
 
-      {/* Existing Brands Knowledge */}
-      {brandCount > 0 && (
-        <Card>
+      {/* Existing Brands Section */}
+      {existingBrands.length > 0 && (
+        <Card className="border-green-200 bg-green-50">
           <CardHeader>
-            <CardTitle className="flex items-center space-x-2">
-              <CheckCircle className="w-5 h-5 text-green-500" />
-              <span>Conocimiento de marcas existente</span>
+            <CardTitle className="flex items-center space-x-2 text-green-800">
+              <Heart className="w-5 h-5" />
+              <span>Marcas ya configuradas</span>
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="bg-green-50 p-4 rounded-lg border border-green-200">
-              <div className="flex items-start space-x-3">
-                <Sparkles className="w-5 h-5 text-green-500 mt-0.5" />
-                <div>
-                  <h4 className="font-medium text-green-800">¡Excelente!</h4>
-                  <p className="text-sm text-green-700 mt-1">
-                    Tu agente de voz tendrá conocimiento preentrenado sobre {brandCount} marcas veterinarias 
-                    que ya seleccionaste en tu configuración de WhatsApp:
-                  </p>
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {existingBrands?.slice(0, 5).map((brand) => (
-                      <span key={brand} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                        {brand}
-                      </span>
-                    ))}
-                    {brandCount > 5 && (
-                      <span className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                        +{brandCount - 5} más
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-4">
-              <h5 className="font-medium text-gray-800 mb-2">Tu agente podrá responder por voz preguntas como:</h5>
-              <ul className="text-sm text-gray-600 space-y-1">
-                <li>• "¿Qué alimento me recomiendan para un cachorro de 2 meses?"</li>
-                <li>• "¿Tienen productos Hill's para problemas digestivos?"</li>
-                <li>• "¿Cuál es la diferencia entre Royal Canin Gastro y Satiety?"</li>
-                <li>• "¿Qué vacunas necesita mi perro adulto?"</li>
-              </ul>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-
-      {brandCount === 0 && (
-        <Card>
-          <CardContent className="pt-6">
-            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <div className="flex items-start space-x-3">
-                <Brain className="w-5 h-5 text-blue-500 mt-0.5" />
-                <div>
-                  <h4 className="font-medium text-blue-800">Conocimiento base incluido</h4>
-                  <p className="text-sm text-blue-700 mt-1">
-                    Tu agente incluye conocimiento veterinario general sobre cuidados, 
-                    enfermedades comunes y procedimientos básicos.
-                  </p>
-                </div>
-              </div>
+            <p className="text-sm text-green-700 mb-3">
+              Tu agente de voz heredará automáticamente el conocimiento de estas marcas desde tu configuración de WhatsApp:
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {existingBrands.map((brand) => (
+                <Badge key={brand} variant="outline" className="bg-white border-green-300 text-green-700">
+                  {brand}
+                </Badge>
+              ))}
             </div>
           </CardContent>
         </Card>
       )}
 
       {/* Sponsored Knowledge Section */}
-      <Card className="border-amber-200">
+      <Card className="border-purple-200 bg-purple-50">
         <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Link className="w-5 h-5 text-amber-500" />
-            <span>Conocimiento patrocinado</span>
-            <Crown className="w-4 h-4 text-amber-500" />
+          <CardTitle className="flex items-center space-x-2 text-purple-800">
+            <Star className="w-5 h-5" />
+            <span>🔗 Conocimiento patrocinado</span>
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <p className="text-gray-600">
+        <CardContent>
+          <p className="text-sm text-purple-700 mb-4">
             Activa bloques de conocimiento ya entrenados y patrocinados por marcas confiables. 
             Esto ahorra tiempo y mejora las respuestas.
           </p>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {Object.entries(sponsoredKnowledge).map(([brand, enabled]) => (
-              <div key={brand} className={`p-4 border rounded-lg ${enabled ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
-                <div className="flex items-center justify-between mb-2">
+          <div className="space-y-3">
+            {sponsoredBrands.map((brand) => (
+              <div 
+                key={brand.id} 
+                className="flex items-center justify-between p-3 bg-white rounded-lg border border-purple-200"
+              >
+                <div className="flex items-center space-x-3">
                   <div className="flex items-center space-x-2">
-                    <Crown className={`w-4 h-4 ${enabled ? 'text-amber-500' : 'text-gray-400'}`} />
-                    <span className="font-medium">{brand}</span>
+                    <span className="font-medium text-gray-800">{brand.name}</span>
+                    {brand.sponsor && (
+                      <Badge variant="outline" className="bg-yellow-50 border-yellow-300 text-yellow-700">
+                        Patrocinado
+                      </Badge>
+                    )}
                   </div>
-                  <Switch
-                    checked={enabled}
-                    onCheckedChange={() => toggleSponsoredKnowledge(brand)}
-                  />
+                  <span className="text-sm text-gray-600">{brand.description}</span>
                 </div>
-                <p className="text-sm text-gray-600">
-                  Este bloque ha sido entrenado por {brand}. No necesitas escribir nada.
-                </p>
-                {enabled && (
-                  <div className="mt-2">
-                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
-                      ✓ Activado
-                    </span>
-                  </div>
-                )}
+                <Switch
+                  checked={enabledSponsoredBrands.includes(brand.id)}
+                  onCheckedChange={() => toggleSponsoredBrand(brand.id)}
+                />
               </div>
             ))}
           </div>
+          
+          <p className="text-xs text-purple-600 mt-3">
+            Este bloque ha sido entrenado por cada marca. No necesitas escribir nada adicional.
+          </p>
         </CardContent>
       </Card>
 
-      {/* Additional Knowledge */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center space-x-2">
-            <Upload className="w-5 h-5 text-purple-500" />
-            <span>Conocimiento adicional</span>
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div>
-            <Label htmlFor="additionalKnowledge">
-              Información específica de tu clínica
-            </Label>
-            <Textarea
-              id="additionalKnowledge"
-              value={additionalKnowledge}
-              onChange={(e) => setAdditionalKnowledge(e.target.value)}
-              placeholder="Ej: Horarios especiales, servicios únicos, políticas de la clínica, información sobre el personal veterinario..."
-              className="resize-none min-h-24"
-            />
-            <p className="text-sm text-gray-500 mt-2">
-              Esta información se agregará al conocimiento base del agente de voz
+      {/* Brand Invitation Section */}
+      <Card className="border-blue-200 bg-blue-50">
+        <CardContent className="pt-6">
+          <div className="text-center">
+            <h3 className="font-medium text-blue-800 mb-2">
+              ¿Tu clínica trabaja con alguna marca veterinaria?
+            </h3>
+            <p className="text-sm text-blue-700 mb-4">
+              Puedes invitarla a patrocinar tu agente de voz. Si la marca carga su información aquí, 
+              tu agente responderá con sus productos sin que tú tengas que configurarlo.
             </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 border border-gray-200 rounded-lg">
-              <div className="text-2xl mb-2">🕒</div>
-              <h4 className="font-medium text-gray-800">Horarios</h4>
-              <p className="text-sm text-gray-600">Horarios de atención especiales</p>
-            </div>
-            <div className="text-center p-4 border border-gray-200 rounded-lg">
-              <div className="text-2xl mb-2">🏥</div>
-              <h4 className="font-medium text-gray-800">Servicios</h4>
-              <p className="text-sm text-gray-600">Servicios únicos que ofreces</p>
-            </div>
-            <div className="text-center p-4 border border-gray-200 rounded-lg">
-              <div className="text-2xl mb-2">👨‍⚕️</div>
-              <h4 className="font-medium text-gray-800">Personal</h4>
-              <p className="text-sm text-gray-600">Información del equipo veterinario</p>
-            </div>
+            <Button variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-100">
+              Invitar a mi marca
+            </Button>
           </div>
         </CardContent>
       </Card>
 
-      {/* AI Enhancement Notice */}
-      <div className="bg-purple-50 p-4 rounded-lg border border-purple-200">
-        <div className="flex items-start space-x-3">
-          <Brain className="w-5 h-5 text-purple-500 mt-0.5" />
-          <div>
-            <h4 className="font-medium text-purple-800">IA Asistida</h4>
-            <p className="text-sm text-purple-700 mt-1">
-              Nuestro sistema analizará automáticamente tu información y la organizará 
-              para que tu agente pueda brindar respuestas precisas y coherentes.
-            </p>
+      {/* Knowledge Input Options */}
+      <div className="space-y-4">
+        <h3 className="font-semibold text-gray-800">Conocimiento adicional de tu clínica</h3>
+        
+        <div
+          onClick={() => setKnowledgeType('text')}
+          className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+            knowledgeType === 'text'
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <div className="flex items-center space-x-3">
+            <FileText className="w-6 h-6 text-blue-500" />
+            <div>
+              <h4 className="font-semibold text-gray-800">Escribir información</h4>
+              <p className="text-sm text-gray-600">Escribe información específica sobre tu clínica</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          onClick={() => setKnowledgeType('website')}
+          className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+            knowledgeType === 'website'
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <div className="flex items-center space-x-3">
+            <Globe className="w-6 h-6 text-green-500" />
+            <div>
+              <h4 className="font-semibold text-gray-800">Sitio web</h4>
+              <p className="text-sm text-gray-600">El agente aprenderá de tu página web</p>
+            </div>
+          </div>
+        </div>
+
+        <div
+          onClick={() => setKnowledgeType('file')}
+          className={`p-4 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
+            knowledgeType === 'file'
+              ? 'border-blue-500 bg-blue-50'
+              : 'border-gray-200 hover:border-gray-300'
+          }`}
+        >
+          <div className="flex items-center space-x-3">
+            <Upload className="w-6 h-6 text-purple-500" />
+            <div>
+              <h4 className="font-semibold text-gray-800">Subir archivo</h4>
+              <p className="text-sm text-gray-600">Sube documentos PDF, Word o texto</p>
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Knowledge Input Fields */}
+      {knowledgeType === 'text' && (
+        <div className="mt-6">
+          <Label htmlFor="textKnowledge">Información sobre tu clínica</Label>
+          <Textarea
+            id="textKnowledge"
+            value={textKnowledge}
+            onChange={(e) => setTextKnowledge(e.target.value)}
+            placeholder="Escribe información sobre servicios, horarios, ubicación, especialidades..."
+            className="min-h-32"
+          />
+        </div>
+      )}
+
+      {knowledgeType === 'website' && (
+        <div className="mt-6">
+          <Label htmlFor="websiteUrl">URL de tu sitio web</Label>
+          <Input
+            id="websiteUrl"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            placeholder="https://mi-clinica-veterinaria.com"
+            type="url"
+          />
+        </div>
+      )}
+
+      {knowledgeType === 'file' && (
+        <div className="mt-6">
+          <div className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center">
+            <Upload className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600">Arrastra y suelta tu archivo aquí</p>
+            <p className="text-sm text-gray-500 mt-2">O haz clic para seleccionar</p>
+          </div>
+        </div>
+      )}
 
       <div className="flex justify-between pt-6">
         <Button variant="outline" onClick={onBack}>
@@ -230,6 +251,7 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands }: VoiceKnow
         </Button>
         <Button
           onClick={handleNext}
+          disabled={!isValid()}
           className="bg-purple-600 hover:bg-purple-700"
         >
           Continuar

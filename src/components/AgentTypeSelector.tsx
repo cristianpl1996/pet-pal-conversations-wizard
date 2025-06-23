@@ -1,13 +1,18 @@
+import { useState } from 'react';
 import { MessageCircle, Phone, ArrowRight, Bot, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { QuickVoiceCreationModal } from './voice/QuickVoiceCreationModal';
 
 interface AgentTypeSelectorProps {
   onSelectType: (type: 'whatsapp' | 'voice') => void;
+  onQuickCreate?: (description: string) => void;
 }
 
-export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
+export function AgentTypeSelector({ onSelectType, onQuickCreate }: AgentTypeSelectorProps) {
+  const [showQuickModal, setShowQuickModal] = useState(false);
+
   // Mock data for existing agents - in production this would come from a backend
   const existingAgents = [
     { id: 1, name: "Agente WhatsApp Principal", type: "whatsapp", status: "activo" },
@@ -17,6 +22,15 @@ export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
   const createVoiceFromWhatsApp = (agentName: string) => {
     // This would create a voice agent based on WhatsApp configuration
     onSelectType('voice');
+  };
+
+  const handleQuickCreate = (description: string) => {
+    if (onQuickCreate) {
+      onQuickCreate(description);
+    } else {
+      // Default behavior: go to voice agent creation
+      onSelectType('voice');
+    }
   };
 
   return (
@@ -124,7 +138,7 @@ export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
           {/* Quick Create Button */}
           <div className="text-center mb-8">
             <Button 
-              onClick={() => onSelectType('voice')} // This would open quick mode
+              onClick={() => setShowQuickModal(true)}
               variant="outline" 
               className="bg-white border-2 border-purple-200 text-purple-600 hover:bg-purple-50 px-8 py-3 text-lg"
             >
@@ -192,6 +206,12 @@ export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
           </div>
         </div>
       </div>
+
+      <QuickVoiceCreationModal
+        open={showQuickModal}
+        onOpenChange={setShowQuickModal}
+        onCreateAgent={handleQuickCreate}
+      />
     </div>
   );
 }
