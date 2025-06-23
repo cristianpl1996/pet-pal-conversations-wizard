@@ -1,11 +1,12 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import { ArrowDown, Play, MessageSquare, Phone, CheckCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { ArrowDown, Play, MessageSquare, Phone, CheckCircle, Sparkles, Zap } from 'lucide-react';
 
 interface VoiceFlowStepProps {
   onNext: (flow: any) => void;
@@ -17,6 +18,8 @@ export function VoiceFlowStep({ onNext, onBack }: VoiceFlowStepProps) {
   const [faqEnabled, setFaqEnabled] = useState(true);
   const [memoryEnabled, setMemoryEnabled] = useState(true);
   const [closingMessage, setClosingMessage] = useState('');
+  const [quickObjective, setQuickObjective] = useState('');
+  const [showQuickModal, setShowQuickModal] = useState(false);
 
   const handleNext = () => {
     const flow = {
@@ -26,6 +29,18 @@ export function VoiceFlowStep({ onNext, onBack }: VoiceFlowStepProps) {
       closingMessage
     };
     onNext(flow);
+  };
+
+  const generateQuickFlow = () => {
+    // This would generate flow based on objective
+    const generatedFlow = {
+      greeting: `¡Hola! Hablas con el asistente virtual de tu clínica veterinaria. ${quickObjective.includes('citas') ? 'Estoy aquí para ayudarte a agendar tu cita' : 'Estoy aquí para ayudarte'}.`,
+      closingMessage: "Gracias por contactarnos. ¡Que tengas un excelente día y cuida mucho a tu mascota!"
+    };
+    
+    setGreeting(generatedFlow.greeting);
+    setClosingMessage(generatedFlow.closingMessage);
+    setShowQuickModal(false);
   };
 
   const flowBlocks = [
@@ -73,9 +88,62 @@ export function VoiceFlowStep({ onNext, onBack }: VoiceFlowStepProps) {
           Diseña el flujo conversacional
         </h2>
         <p className="text-gray-600">
-          Define cómo interactuará tu agente durante las llamadas
+          Puedes diseñar el flujo paso a paso o decirnos el objetivo de tu agente, y nosotros lo configuramos por ti en segundos.
         </p>
       </div>
+
+      {/* Quick Generation Section */}
+      <Card className="border-purple-200 bg-purple-50">
+        <CardContent className="pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center space-x-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <h3 className="font-medium text-purple-800">Generación rápida por objetivo</h3>
+            </div>
+            <Dialog open={showQuickModal} onOpenChange={setShowQuickModal}>
+              <DialogTrigger asChild>
+                <Button variant="outline" className="border-purple-300 text-purple-600 hover:bg-purple-100">
+                  <Zap className="w-4 h-4 mr-2" />
+                  Generar automáticamente
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Describe el objetivo de tu agente</DialogTitle>
+                </DialogHeader>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="quickObjective">¿Qué quieres que haga tu agente?</Label>
+                    <Textarea
+                      id="quickObjective"
+                      value={quickObjective}
+                      onChange={(e) => setQuickObjective(e.target.value)}
+                      placeholder="Ej. Quiero que atienda llamadas para agendar citas y explicar servicios"
+                      className="resize-none"
+                      rows={3}
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-2">
+                    <Button variant="outline" onClick={() => setShowQuickModal(false)}>
+                      Cancelar
+                    </Button>
+                    <Button 
+                      onClick={generateQuickFlow}
+                      disabled={!quickObjective.trim()}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      Generar flujo
+                    </Button>
+                  </div>
+                </div>
+              </DialogContent>
+            </Dialog>
+          </div>
+          <p className="text-sm text-purple-700">
+            Ahorra tiempo: describe lo que quieres lograr y generamos el flujo conversacional automáticamente.
+          </p>
+        </CardContent>
+      </Card>
 
       {/* Visual Flow Builder */}
       <div className="bg-gray-50 p-6 rounded-xl">

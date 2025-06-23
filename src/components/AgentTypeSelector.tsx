@@ -1,12 +1,24 @@
-
-import { MessageCircle, Phone, ArrowRight } from 'lucide-react';
+import { MessageCircle, Phone, ArrowRight, Bot, Plus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 
 interface AgentTypeSelectorProps {
   onSelectType: (type: 'whatsapp' | 'voice') => void;
 }
 
 export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
+  // Mock data for existing agents - in production this would come from a backend
+  const existingAgents = [
+    { id: 1, name: "Agente WhatsApp Principal", type: "whatsapp", status: "activo" },
+    { id: 2, name: "Asistente de Ventas", type: "whatsapp", status: "inactivo" },
+  ];
+
+  const createVoiceFromWhatsApp = (agentName: string) => {
+    // This would create a voice agent based on WhatsApp configuration
+    onSelectType('voice');
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-green-50 to-blue-50 flex items-center justify-center">
       <div className="container mx-auto px-4 py-8">
@@ -21,7 +33,7 @@ export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+          <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-12">
             {/* WhatsApp Agent */}
             <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-8 hover:shadow-xl transition-all duration-300 hover:-translate-y-1">
               <div className="flex items-center justify-center w-16 h-16 bg-green-100 rounded-xl mb-6 mx-auto">
@@ -108,6 +120,70 @@ export function AgentTypeSelector({ onSelectType }: AgentTypeSelectorProps) {
               </Button>
             </div>
           </div>
+
+          {/* Quick Create Button */}
+          <div className="text-center mb-8">
+            <Button 
+              onClick={() => onSelectType('voice')} // This would open quick mode
+              variant="outline" 
+              className="bg-white border-2 border-purple-200 text-purple-600 hover:bg-purple-50 px-8 py-3 text-lg"
+            >
+              <Plus className="w-5 h-5 mr-2" />
+              Crear agente en 1 clic
+            </Button>
+            <p className="text-sm text-gray-500 mt-2">
+              Modo rápido: describe tu objetivo y creamos el agente automáticamente
+            </p>
+          </div>
+
+          {/* Existing Agents Section */}
+          {existingAgents.length > 0 && (
+            <Card className="max-w-4xl mx-auto">
+              <CardHeader>
+                <CardTitle className="flex items-center space-x-2">
+                  <Bot className="w-5 h-5 text-blue-500" />
+                  <span>¿Ya tienes agentes creados?</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-600 mb-4">
+                  ¿Quieres ahorrar tiempo? Puedes crear un nuevo agente de voz reutilizando el conocimiento y comportamiento de un agente de texto existente.
+                </p>
+                
+                <div className="space-y-3">
+                  {existingAgents.map((agent) => (
+                    <div key={agent.id} className="flex items-center justify-between p-4 border border-gray-200 rounded-lg">
+                      <div className="flex items-center space-x-3">
+                        <div className={`w-3 h-3 rounded-full ${agent.status === 'activo' ? 'bg-green-500' : 'bg-gray-400'}`}></div>
+                        <div>
+                          <h4 className="font-medium text-gray-800">{agent.name}</h4>
+                          <div className="flex items-center space-x-2">
+                            <Badge variant={agent.type === 'whatsapp' ? 'default' : 'secondary'}>
+                              {agent.type === 'whatsapp' ? 'WhatsApp' : 'Voz'}
+                            </Badge>
+                            <Badge variant={agent.status === 'activo' ? 'default' : 'secondary'}>
+                              {agent.status}
+                            </Badge>
+                          </div>
+                        </div>
+                      </div>
+                      
+                      {agent.type === 'whatsapp' && (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => createVoiceFromWhatsApp(agent.name)}
+                          className="text-purple-600 border-purple-200 hover:bg-purple-50"
+                        >
+                          Crear agente de voz basado en este
+                        </Button>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          )}
 
           <div className="text-center mt-8">
             <p className="text-sm text-gray-500">

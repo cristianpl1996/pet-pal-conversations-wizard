@@ -1,5 +1,4 @@
-
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,6 +29,23 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
     stt: null as boolean | null,
     phone: null as boolean | null
   });
+  const [selectedProviders, setSelectedProviders] = useState({
+    llm: 'OpenAI GPT-4',
+    tts: 'ElevenLabs',
+    stt: 'Deepgram',
+    phone: 'Twilio'
+  });
+
+  // Auto-select recommended providers on component mount
+  useEffect(() => {
+    // This simulates smart preselection based on language/use case
+    setSelectedProviders({
+      llm: 'OpenAI GPT-4',
+      tts: 'ElevenLabs',
+      stt: 'Deepgram',
+      phone: 'Twilio'
+    });
+  }, []);
 
   const handleValidation = async (type: string, apiKey: string) => {
     // Simulación de validación - en producción esto haría una llamada real a la API
@@ -47,10 +63,10 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
 
   const handleNext = () => {
     const providers = {
-      llm: { apiKey: llmApiKey, validated: validations.llm },
-      tts: { apiKey: ttsApiKey, validated: validations.tts },
-      stt: { apiKey: sttApiKey, validated: validations.stt },
-      phone: { apiKey: phoneApiKey, validated: validations.phone }
+      llm: { apiKey: llmApiKey, validated: validations.llm, provider: selectedProviders.llm },
+      tts: { apiKey: ttsApiKey, validated: validations.tts, provider: selectedProviders.tts },
+      stt: { apiKey: sttApiKey, validated: validations.stt, provider: selectedProviders.stt },
+      phone: { apiKey: phoneApiKey, validated: validations.phone, provider: selectedProviders.phone }
     };
     onNext(providers);
   };
@@ -124,8 +140,23 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
           Configura los proveedores
         </h2>
         <p className="text-gray-600">
-          Conecta los servicios de IA necesarios para tu agente de voz
+          Te recomendamos los servicios ideales para tu configuración. 
+          Puedes cambiarlos, pero esta opción ya ha sido optimizada por defecto.
         </p>
+      </div>
+
+      {/* Smart Recommendation Notice */}
+      <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+        <div className="flex items-start space-x-3">
+          <CheckCircle className="w-5 h-5 text-blue-500 mt-0.5" />
+          <div>
+            <h4 className="font-medium text-blue-800">Proveedores recomendados</h4>
+            <p className="text-sm text-blue-700 mt-1">
+              Hemos seleccionado proveedores recomendados para tu idioma y caso de uso. 
+              Puedes cambiarlos si lo deseas.
+            </p>
+          </div>
+        </div>
       </div>
 
       <Tabs defaultValue="llm" className="w-full">
@@ -156,7 +187,10 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
                   <Brain className="w-5 h-5 text-blue-500" />
                   <span>Modelo de Lenguaje (LLM)</span>
                 </div>
-                <Badge variant="secondary">Requerido</Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">Requerido</Badge>
+                  <Badge variant="outline" className="bg-blue-50 text-blue-700">Recomendado: {selectedProviders.llm}</Badge>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -180,7 +214,10 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
                   <Volume2 className="w-5 h-5 text-green-500" />
                   <span>Síntesis de Voz (TTS)</span>
                 </div>
-                <Badge variant="secondary">Requerido</Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">Requerido</Badge>
+                  <Badge variant="outline" className="bg-green-50 text-green-700">Recomendado: {selectedProviders.tts}</Badge>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -204,7 +241,10 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
                   <Mic className="w-5 h-5 text-purple-500" />
                   <span>Reconocimiento de Voz (STT)</span>
                 </div>
-                <Badge variant="secondary">Requerido</Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="secondary">Requerido</Badge>
+                  <Badge variant="outline" className="bg-purple-50 text-purple-700">Recomendado: {selectedProviders.stt}</Badge>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -228,7 +268,10 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
                   <Phone className="w-5 h-5 text-orange-500" />
                   <span>Servicios Telefónicos</span>
                 </div>
-                <Badge variant="outline">Opcional</Badge>
+                <div className="flex items-center space-x-2">
+                  <Badge variant="outline">Opcional</Badge>
+                  <Badge variant="outline" className="bg-orange-50 text-orange-700">Recomendado: {selectedProviders.phone}</Badge>
+                </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -259,23 +302,23 @@ export function VoiceProvidersStep({ onNext, onBack }: VoiceProvidersStepProps) 
         </div>
       </div>
 
-      {/* Cost Estimation */}
+      {/* Cost Estimation - Only for selected providers */}
       <Card>
         <CardHeader>
-          <CardTitle>Estimación de costos</CardTitle>
+          <CardTitle>Estimación de costos (proveedores seleccionados)</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
             <div className="p-4 bg-blue-50 rounded-lg">
-              <h4 className="font-semibold text-blue-800">LLM (GPT-4)</h4>
+              <h4 className="font-semibold text-blue-800">{selectedProviders.llm}</h4>
               <p className="text-sm text-blue-600">~$0.03 por minuto</p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">
-              <h4 className="font-semibold text-green-800">TTS (ElevenLabs)</h4>
+              <h4 className="font-semibold text-green-800">{selectedProviders.tts}</h4>
               <p className="text-sm text-green-600">~$0.18 por minuto</p>
             </div>
             <div className="p-4 bg-purple-50 rounded-lg">
-              <h4 className="font-semibold text-purple-800">STT (Deepgram)</h4>
+              <h4 className="font-semibold text-purple-800">{selectedProviders.stt}</h4>
               <p className="text-sm text-purple-600">~$0.0043 por minuto</p>
             </div>
           </div>

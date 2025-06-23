@@ -1,9 +1,11 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Brain, Upload, CheckCircle, Sparkles } from 'lucide-react';
+import { Switch } from '@/components/ui/switch';
+import { Brain, Upload, CheckCircle, Sparkles, Crown, Link } from 'lucide-react';
 
 interface VoiceKnowledgeStepProps {
   onNext: (knowledge: any) => void;
@@ -14,14 +16,28 @@ interface VoiceKnowledgeStepProps {
 export function VoiceKnowledgeStep({ onNext, onBack, existingBrands }: VoiceKnowledgeStepProps) {
   const [additionalKnowledge, setAdditionalKnowledge] = useState('');
   const [useExistingBrands, setUseExistingBrands] = useState(true);
+  const [sponsoredKnowledge, setSponsoredKnowledge] = useState({
+    'Hill\'s': true,
+    'Royal Canin': false,
+    'Purina Pro Plan': true,
+    'Bayer': false
+  });
 
   const handleNext = () => {
     const knowledge = {
       useExistingBrands,
       existingBrands: useExistingBrands ? existingBrands : [],
-      additionalKnowledge
+      additionalKnowledge,
+      sponsoredKnowledge
     };
     onNext(knowledge);
+  };
+
+  const toggleSponsoredKnowledge = (brand: string) => {
+    setSponsoredKnowledge(prev => ({
+      ...prev,
+      [brand]: !prev[brand]
+    }));
   };
 
   const brandCount = existingBrands?.length || 0;
@@ -78,7 +94,7 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands }: VoiceKnow
               <ul className="text-sm text-gray-600 space-y-1">
                 <li>• "¿Qué alimento me recomiendan para un cachorro de 2 meses?"</li>
                 <li>• "¿Tienen productos Hill's para problemas digestivos?"</li>
-                <li>• "¿Cuál es la diferencia entre Royal Canin y Purina Pro Plan?"</li>
+                <li>• "¿Cuál es la diferencia entre Royal Canin Gastro y Satiety?"</li>
                 <li>• "¿Qué vacunas necesita mi perro adulto?"</li>
               </ul>
             </div>
@@ -104,6 +120,50 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands }: VoiceKnow
           </CardContent>
         </Card>
       )}
+
+      {/* Sponsored Knowledge Section */}
+      <Card className="border-amber-200">
+        <CardHeader>
+          <CardTitle className="flex items-center space-x-2">
+            <Link className="w-5 h-5 text-amber-500" />
+            <span>Conocimiento patrocinado</span>
+            <Crown className="w-4 h-4 text-amber-500" />
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-gray-600">
+            Activa bloques de conocimiento ya entrenados y patrocinados por marcas confiables. 
+            Esto ahorra tiempo y mejora las respuestas.
+          </p>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {Object.entries(sponsoredKnowledge).map(([brand, enabled]) => (
+              <div key={brand} className={`p-4 border rounded-lg ${enabled ? 'border-amber-300 bg-amber-50' : 'border-gray-200'}`}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2">
+                    <Crown className={`w-4 h-4 ${enabled ? 'text-amber-500' : 'text-gray-400'}`} />
+                    <span className="font-medium">{brand}</span>
+                  </div>
+                  <Switch
+                    checked={enabled}
+                    onCheckedChange={() => toggleSponsoredKnowledge(brand)}
+                  />
+                </div>
+                <p className="text-sm text-gray-600">
+                  Este bloque ha sido entrenado por {brand}. No necesitas escribir nada.
+                </p>
+                {enabled && (
+                  <div className="mt-2">
+                    <span className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-amber-100 text-amber-800">
+                      ✓ Activado
+                    </span>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Additional Knowledge */}
       <Card>
