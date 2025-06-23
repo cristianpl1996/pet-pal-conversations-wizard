@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,9 +10,10 @@ import { ChevronDown, Settings, Mic } from 'lucide-react';
 
 interface VoiceBasicConfigStepProps {
   onNext: (config: any) => void;
+  onBack?: () => void;
 }
 
-export function VoiceBasicConfigStep({ onNext }: VoiceBasicConfigStepProps) {
+export function VoiceBasicConfigStep({ onNext, onBack }: VoiceBasicConfigStepProps) {
   const [agentName, setAgentName] = useState('');
   const [description, setDescription] = useState('');
   const [language, setLanguage] = useState('');
@@ -213,11 +213,16 @@ export function VoiceBasicConfigStep({ onNext }: VoiceBasicConfigStepProps) {
         </div>
       </div>
 
-      <div className="flex justify-center pt-6">
+      <div className="flex justify-between pt-6">
+        {onBack && (
+          <Button variant="outline" onClick={onBack}>
+            Atrás
+          </Button>
+        )}
         <Button
           onClick={handleNext}
           disabled={!isValid()}
-          className="px-8 py-3 text-lg bg-purple-600 hover:bg-purple-700"
+          className="px-8 py-3 text-lg bg-purple-600 hover:bg-purple-700 ml-auto"
         >
           Continuar
         </Button>
