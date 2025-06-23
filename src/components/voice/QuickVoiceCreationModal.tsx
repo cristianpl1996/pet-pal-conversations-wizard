@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Zap, Sparkles } from 'lucide-react';
+import { Zap, Sparkles, Brain } from 'lucide-react';
 
 interface QuickVoiceCreationModalProps {
   open: boolean;
@@ -38,23 +38,24 @@ export function QuickVoiceCreationModal({
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <Zap className="w-5 h-5 text-purple-500" />
-            <span>Crear agente en 1 clic</span>
+            <span>Crear asistente telefónico en 1 clic</span>
           </DialogTitle>
         </DialogHeader>
         
         <div className="space-y-4">
           <div>
             <h3 className="font-medium text-gray-800 mb-2">
-              Describe en una frase qué debería hacer tu agente
+              Describe con tus palabras qué quieres que haga tu asistente telefónico
             </h3>
             <p className="text-sm text-gray-600 mb-3">
-              Ejemplo: "Quiero que atienda llamadas y agende citas para mi veterinaria"
+              Por ejemplo: "agendar citas", "responder dudas" o "recomendar productos". 
+              Nosotros configuramos todo automáticamente.
             </p>
             
             <Textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe qué quieres que haga tu agente de voz..."
+              placeholder="Describe qué quieres que haga tu asistente telefónico..."
               className="resize-none"
               rows={3}
             />
@@ -77,11 +78,12 @@ export function QuickVoiceCreationModal({
 
           <div className="bg-purple-50 p-3 rounded-lg border border-purple-200">
             <div className="flex items-start space-x-2">
-              <Sparkles className="w-4 h-4 text-purple-500 mt-0.5" />
+              <Brain className="w-4 h-4 text-purple-500 mt-0.5" />
               <div>
                 <p className="text-sm text-purple-700">
-                  <strong>IA automática:</strong> Interpretaremos tu descripción y crearemos 
-                  el agente completo con voz, flujo y configuración optimizada.
+                  <strong>Inteligencia automática:</strong> Interpretaremos tu descripción y crearemos 
+                  el asistente completo con voz empática, comprensión inteligente y configuración optimizada 
+                  para clínicas veterinarias.
                 </p>
               </div>
             </div>
@@ -97,7 +99,7 @@ export function QuickVoiceCreationModal({
               className="bg-purple-600 hover:bg-purple-700"
             >
               <Sparkles className="w-4 h-4 mr-2" />
-              Crear agente
+              Crear asistente
             </Button>
           </div>
         </div>

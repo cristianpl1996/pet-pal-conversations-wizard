@@ -7,15 +7,23 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Settings, Zap, Brain, Calendar, Pill, Heart, AlertTriangle, Users, Plus } from 'lucide-react';
+import { Settings, Zap, Brain, Calendar, Pill, Heart, AlertTriangle, Users, Plus, CheckCircle } from 'lucide-react';
 
 interface VoiceObjectiveStepProps {
   onNext: (objectives: any) => void;
   onBack: () => void;
   onEnableExpertMode?: () => void;
+  guidedMode?: boolean;
+  setGuidedMode?: (mode: boolean) => void;
 }
 
-export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: VoiceObjectiveStepProps) {
+export function VoiceObjectiveStep({ 
+  onNext, 
+  onBack, 
+  onEnableExpertMode, 
+  guidedMode = true, 
+  setGuidedMode 
+}: VoiceObjectiveStepProps) {
   const [selectedObjectives, setSelectedObjectives] = useState<string[]>([]);
   const [customObjective, setCustomObjective] = useState('');
   const [showCustomModal, setShowCustomModal] = useState(false);
@@ -76,7 +84,8 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
   const handleNext = () => {
     const config = {
       selectedObjectives,
-      customObjective: customObjective.trim() || null
+      customObjective: customObjective.trim() || null,
+      guidedMode
     };
     onNext(config);
   };
@@ -85,7 +94,8 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
     if (customObjective.trim()) {
       const config = {
         selectedObjectives: [],
-        customObjective: customObjective.trim()
+        customObjective: customObjective.trim(),
+        guidedMode
       };
       onNext(config);
     }
@@ -100,25 +110,38 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
       <div className="text-center mb-8">
         <div className="text-6xl mb-4">🎯</div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          ¿Qué quieres que haga tu agente de voz?
+          ¿Qué quieres que haga tu asistente telefónico?
         </h2>
         <p className="text-gray-600">
-          Selecciona uno o varios objetivos y configuraremos todo por ti. Sin necesidad de conocimientos técnicos.
+          Selecciona uno o varios objetivos. Configuraremos todo automáticamente para que funcione sin complicaciones.
         </p>
       </div>
 
-      {/* Expert Mode Toggle */}
-      <div className="flex justify-end mb-4">
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onEnableExpertMode}
-          className="text-gray-500 hover:text-gray-700"
-        >
-          <Settings className="w-4 h-4 mr-2" />
-          Modo experto
-        </Button>
-      </div>
+      {/* Guided Mode Notice */}
+      {guidedMode && (
+        <div className="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6">
+          <div className="flex items-start space-x-3">
+            <CheckCircle className="w-5 h-5 text-blue-500 mt-0.5" />
+            <div className="flex-1">
+              <h4 className="font-medium text-blue-800">🧠 Modo guiado activado</h4>
+              <p className="text-sm text-blue-700 mt-1">
+                Usaremos automáticamente la mejor configuración para tu clínica veterinaria.
+              </p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => {
+                setGuidedMode?.(false);
+                onEnableExpertMode?.();
+              }}
+              className="text-blue-600 hover:text-blue-700 text-xs"
+            >
+              ¿Eres técnico? Modo experto
+            </Button>
+          </div>
+        </div>
+      )}
 
       {/* Objectives Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -182,12 +205,12 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
                 </DialogHeader>
                 <div className="space-y-4">
                   <div>
-                    <Label htmlFor="customObjective">¿Qué quieres que haga tu agente?</Label>
+                    <Label htmlFor="customObjective">¿Qué quieres que haga tu asistente telefónico?</Label>
                     <Textarea
                       id="customObjective"
                       value={customObjective}
                       onChange={(e) => setCustomObjective(e.target.value)}
-                      placeholder="Ej. Quiero que atienda llamadas para agendar citas y explicar servicios específicos de cirugía..."
+                      placeholder="Ej. Quiero que atienda llamadas para agendar citas y explique servicios específicos de cirugía..."
                       className="resize-none"
                       rows={4}
                     />
@@ -201,7 +224,7 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
                       disabled={!customObjective.trim()}
                       className="bg-purple-600 hover:bg-purple-700"
                     >
-                      Crear agente personalizado
+                      Crear asistente personalizado
                     </Button>
                   </div>
                 </div>
@@ -215,7 +238,7 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
       {selectedObjectives.length > 0 && (
         <Card className="bg-green-50 border-green-200">
           <CardContent className="pt-6">
-            <h3 className="font-medium text-green-800 mb-2">Objetivos seleccionados:</h3>
+            <h3 className="font-medium text-green-800 mb-2">Funciones seleccionadas:</h3>
             <div className="flex flex-wrap gap-2">
               {selectedObjectives.map((id) => {
                 const objective = objectives.find(obj => obj.id === id);
@@ -230,7 +253,7 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
         </Card>
       )}
 
-      {/* Quick Generation Preview */}
+      {/* Auto Configuration Preview */}
       <Card className="border-blue-200 bg-blue-50">
         <CardContent className="pt-6">
           <div className="flex items-start space-x-3">
@@ -238,9 +261,9 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
             <div>
               <h4 className="font-medium text-blue-800">Configuración automática</h4>
               <p className="text-sm text-blue-700 mt-1">
-                Una vez que selecciones tus objetivos, generaremos automáticamente:
-                el flujo conversacional, la voz del asistente, y todos los parámetros técnicos.
-                Sin complicaciones, listo para usar.
+                Una vez que selecciones tus objetivos, configuraremos automáticamente: 
+                el motor de comprensión inteligente, la voz empática del asistente, 
+                y la línea telefónica. Sin complicaciones técnicas, listo para usar.
               </p>
             </div>
           </div>
@@ -256,7 +279,7 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
           disabled={!isValid()}
           className="bg-purple-600 hover:bg-purple-700"
         >
-          🪄 Crear flujo automáticamente
+          🪄 Configurar automáticamente
         </Button>
       </div>
     </div>

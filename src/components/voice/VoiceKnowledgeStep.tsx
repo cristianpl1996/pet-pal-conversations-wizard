@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,15 +7,21 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Upload, Globe, FileText, Star, Heart } from 'lucide-react';
+import { Upload, Globe, FileText, Star, Heart, Lightbulb } from 'lucide-react';
 
 interface VoiceKnowledgeStepProps {
   onNext: (knowledge: any) => void;
   onBack: () => void;
   existingBrands?: string[];
+  guidedMode?: boolean;
 }
 
-export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: VoiceKnowledgeStepProps) {
+export function VoiceKnowledgeStep({ 
+  onNext, 
+  onBack, 
+  existingBrands = [], 
+  guidedMode = true 
+}: VoiceKnowledgeStepProps) {
   const [knowledgeType, setKnowledgeType] = useState<string>('');
   const [textKnowledge, setTextKnowledge] = useState('');
   const [websiteUrl, setWebsiteUrl] = useState('');
@@ -41,7 +48,8 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
       type: knowledgeType,
       content: knowledgeType === 'text' ? textKnowledge : websiteUrl,
       existingBrands,
-      sponsoredBrands: enabledSponsoredBrands
+      sponsoredBrands: enabledSponsoredBrands,
+      guidedMode
     };
     onNext(knowledge);
   };
@@ -50,7 +58,7 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
     if (knowledgeType === 'text') return textKnowledge.trim().length > 0;
     if (knowledgeType === 'website') return websiteUrl.trim().length > 0;
     if (knowledgeType === 'file') return true;
-    return enabledSponsoredBrands.length > 0; // Allow to continue if only sponsored brands are selected
+    return enabledSponsoredBrands.length > 0 || guidedMode;
   };
 
   return (
@@ -58,10 +66,13 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
       <div className="text-center mb-8">
         <div className="text-6xl mb-4">🧠</div>
         <h2 className="text-2xl font-semibold text-gray-800 mb-2">
-          Integración de Conocimiento
+          Conocimiento de tu Clínica
         </h2>
         <p className="text-gray-600">
-          Conecta el conocimiento de tu clínica y activa bloques patrocinados por marcas
+          {guidedMode 
+            ? 'Enséñale a tu asistente sobre tu clínica y activa información de marcas confiables'
+            : 'Conecta el conocimiento de tu clínica y activa bloques patrocinados por marcas'
+          }
         </p>
       </div>
 
@@ -76,7 +87,7 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
           </CardHeader>
           <CardContent>
             <p className="text-sm text-green-700 mb-3">
-              Tu agente de voz heredará automáticamente el conocimiento de estas marcas desde tu configuración de WhatsApp:
+              Tu asistente telefónico heredará automáticamente el conocimiento de estas marcas desde tu configuración de WhatsApp:
             </p>
             <div className="flex flex-wrap gap-2">
               {existingBrands.map((brand) => (
@@ -94,13 +105,13 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
         <CardHeader>
           <CardTitle className="flex items-center space-x-2 text-purple-800">
             <Star className="w-5 h-5" />
-            <span>🔗 Conocimiento patrocinado</span>
+            <span>🔗 Información de marcas veterinarias</span>
           </CardTitle>
         </CardHeader>
         <CardContent>
           <p className="text-sm text-purple-700 mb-4">
-            Activa bloques de conocimiento ya entrenados y patrocinados por marcas confiables. 
-            Esto ahorra tiempo y mejora las respuestas.
+            Activa información ya preparada de marcas confiables. Tu asistente podrá responder 
+            sobre estos productos de forma precisa y actualizada.
           </p>
           
           <div className="space-y-3">
@@ -114,7 +125,7 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
                     <span className="font-medium text-gray-800">{brand.name}</span>
                     {brand.sponsor && (
                       <Badge variant="outline" className="bg-yellow-50 border-yellow-300 text-yellow-700">
-                        Patrocinado
+                        Información verificada
                       </Badge>
                     )}
                   </div>
@@ -129,32 +140,35 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
           </div>
           
           <p className="text-xs text-purple-600 mt-3">
-            Este bloque ha sido entrenado por cada marca. No necesitas escribir nada adicional.
+            Esta información ha sido preparada por cada marca. No necesitas escribir nada adicional.
           </p>
         </CardContent>
       </Card>
 
-      {/* Brand Invitation Section */}
+      {/* Brand Invitation Section - Clinic-focused */}
       <Card className="border-blue-200 bg-blue-50">
         <CardContent className="pt-6">
-          <div className="text-center">
-            <h3 className="font-medium text-blue-800 mb-2">
-              ¿Tu clínica trabaja con alguna marca veterinaria?
-            </h3>
-            <p className="text-sm text-blue-700 mb-4">
-              Puedes invitarla a patrocinar tu agente de voz. Si la marca carga su información aquí, 
-              tu agente responderá con sus productos sin que tú tengas que configurarlo.
-            </p>
-            <Button variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-100">
-              Invitar a mi marca
-            </Button>
+          <div className="flex items-start space-x-3">
+            <Lightbulb className="w-5 h-5 text-blue-500 mt-1" />
+            <div className="flex-1">
+              <h3 className="font-medium text-blue-800 mb-2">
+                💡 ¿Trabajas con alguna marca veterinaria?
+              </h3>
+              <p className="text-sm text-blue-700 mb-4">
+                Puedes invitarla a conectar sus productos para que tu asistente 
+                responda con información precisa y actualizada.
+              </p>
+              <Button variant="outline" className="border-blue-300 text-blue-600 hover:bg-blue-100">
+                Invitar a una marca
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Knowledge Input Options */}
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-800">Conocimiento adicional de tu clínica</h3>
+        <h3 className="font-semibold text-gray-800">Información adicional de tu clínica</h3>
         
         <div
           onClick={() => setKnowledgeType('text')}
@@ -185,7 +199,7 @@ export function VoiceKnowledgeStep({ onNext, onBack, existingBrands = [] }: Voic
             <Globe className="w-6 h-6 text-green-500" />
             <div>
               <h4 className="font-semibold text-gray-800">Sitio web</h4>
-              <p className="text-sm text-gray-600">El agente aprenderá de tu página web</p>
+              <p className="text-sm text-gray-600">El asistente aprenderá de tu página web</p>
             </div>
           </div>
         </div>
