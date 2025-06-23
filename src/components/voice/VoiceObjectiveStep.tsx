@@ -148,7 +148,6 @@ export function VoiceObjectiveStep({ onNext, onBack, onEnableExpertMode }: Voice
                   </div>
                   <Checkbox 
                     checked={isSelected}
-                    readOnly
                     className="mt-1"
                   />
                 </div>
