@@ -64,6 +64,7 @@ const Index = () => {
     'Despliegue',
     'Activación'
   ];
+  console.log('voiceSteps defined with length:', voiceSteps.length, 'steps:', voiceSteps);
 
   const updateConfig = (key: keyof AppConfig, value: any) => {
     setAppConfig(prev => ({ ...prev, [key]: value }));
