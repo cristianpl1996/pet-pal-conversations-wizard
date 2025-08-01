@@ -5,11 +5,13 @@ import { Badge } from '@/components/ui/badge';
 import { CheckCircle, Phone, Calendar, Clock, BarChart3, Play, Download, Settings } from 'lucide-react';
 
 interface VoiceCallLogsStepProps {
+  onNext?: () => void;
   onBack: () => void;
   config: any;
+  guidedMode?: boolean;
 }
 
-export function VoiceCallLogsStep({ onBack, config }: VoiceCallLogsStepProps) {
+export function VoiceCallLogsStep({ onNext, onBack, config, guidedMode }: VoiceCallLogsStepProps) {
   const generateConfigSummary = () => {
     const objectives = config.objectives?.selectedObjectives || [];
     const objectiveLabels = {
@@ -45,8 +47,12 @@ export function VoiceCallLogsStep({ onBack, config }: VoiceCallLogsStepProps) {
   };
 
   const handleDeploy = () => {
-    // Simular despliegue
-    alert("🚀 ¡Tu agente de voz ha sido desplegado exitosamente! Ya está listo para recibir llamadas.");
+    if (onNext) {
+      onNext();
+    } else {
+      // Simular despliegue directo si no hay paso siguiente
+      alert("🚀 ¡Tu agente de voz ha sido desplegado exitosamente! Ya está listo para recibir llamadas.");
+    }
   };
 
   return (
@@ -208,7 +214,7 @@ export function VoiceCallLogsStep({ onBack, config }: VoiceCallLogsStepProps) {
           onClick={handleDeploy}
           className="bg-green-600 hover:bg-green-700 text-white"
         >
-          🚀 Desplegar agente
+          {onNext ? "Continuar a activación" : "🚀 Desplegar agente"}
         </Button>
       </div>
 

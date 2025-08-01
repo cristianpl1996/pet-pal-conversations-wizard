@@ -16,6 +16,7 @@ import { VoiceKnowledgeStep } from '@/components/voice/VoiceKnowledgeStep';
 import { VoiceProvidersStep } from '@/components/voice/VoiceProvidersStep';
 import { VoicePhoneStep } from '@/components/voice/VoicePhoneStep';
 import { VoiceCallLogsStep } from '@/components/voice/VoiceCallLogsStep';
+import { VoiceActivationStep } from '@/components/voice/VoiceActivationStep';
 
 interface AppConfig {
   objective?: string;
@@ -60,7 +61,8 @@ const Index = () => {
     'Conocimiento',
     'Conexiones',
     'Configuración Telefónica',
-    'Listo'
+    'Despliegue',
+    'Activación'
   ];
 
   const updateConfig = (key: keyof AppConfig, value: any) => {
@@ -373,6 +375,24 @@ const Index = () => {
               onBack={resetFlow}
             >
               <VoiceCallLogsStep 
+                onNext={nextStep}
+                onBack={prevStep}
+                config={voiceConfig}
+                guidedMode={guidedMode}
+              />
+            </StepContainer>
+          );
+
+        case 7:
+          return (
+            <StepContainer 
+              currentStep={currentStep} 
+              title="Activación"
+              subtitle="¿Cómo deseas activar tu agente?"
+              steps={voiceSteps}
+              onBack={resetFlow}
+            >
+              <VoiceActivationStep 
                 onBack={prevStep}
                 config={voiceConfig}
                 guidedMode={guidedMode}

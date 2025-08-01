@@ -11,9 +11,10 @@ import { Phone, Plus, MessageSquare, RotateCcw } from 'lucide-react';
 interface VoicePhoneStepProps {
   onNext: (phone: any) => void;
   onBack: () => void;
+  guidedMode?: boolean;
 }
 
-export function VoicePhoneStep({ onNext, onBack }: VoicePhoneStepProps) {
+export function VoicePhoneStep({ onNext, onBack, guidedMode }: VoicePhoneStepProps) {
   const [phoneOption, setPhoneOption] = useState('');
   const [selectedNumber, setSelectedNumber] = useState('');
   const [newNumber, setNewNumber] = useState('');

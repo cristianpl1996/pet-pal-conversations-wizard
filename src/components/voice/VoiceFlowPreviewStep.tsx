@@ -11,9 +11,10 @@ interface VoiceFlowPreviewStepProps {
   onBack: () => void;
   objectives?: any;
   expertMode?: boolean;
+  guidedMode?: boolean;
 }
 
-export function VoiceFlowPreviewStep({ onNext, onBack, objectives, expertMode }: VoiceFlowPreviewStepProps) {
+export function VoiceFlowPreviewStep({ onNext, onBack, objectives, expertMode, guidedMode }: VoiceFlowPreviewStepProps) {
   const [showManualEditor, setShowManualEditor] = useState(false);
   const [generatedFlow, setGeneratedFlow] = useState(() => generateAutomaticFlow(objectives));
 

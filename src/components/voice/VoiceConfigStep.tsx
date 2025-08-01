@@ -10,9 +10,10 @@ import { Volume2, Mic, Settings, Play } from 'lucide-react';
 interface VoiceConfigStepProps {
   onNext: (voiceSettings: any) => void;
   onBack: () => void;
+  guidedMode?: boolean;
 }
 
-export function VoiceConfigStep({ onNext, onBack }: VoiceConfigStepProps) {
+export function VoiceConfigStep({ onNext, onBack, guidedMode }: VoiceConfigStepProps) {
   const [ttsProvider, setTtsProvider] = useState('');
   const [voiceType, setVoiceType] = useState('');
   const [voiceLanguage, setVoiceLanguage] = useState('');
