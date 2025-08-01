@@ -47,7 +47,9 @@ export function VoiceCallLogsStep({ onNext, onBack, config, guidedMode }: VoiceC
   };
 
   const handleDeploy = () => {
+    console.log('handleDeploy called, onNext exists:', !!onNext);
     if (onNext) {
+      console.log('Calling onNext function');
       onNext();
     } else {
       // Simular despliegue directo si no hay paso siguiente
