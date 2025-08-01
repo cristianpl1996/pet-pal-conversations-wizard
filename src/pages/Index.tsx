@@ -75,7 +75,12 @@ const Index = () => {
 
   const nextStep = () => {
     const maxSteps = agentType === 'voice' ? voiceSteps.length - 1 : whatsappSteps.length - 1;
-    setCurrentStep(prev => Math.min(prev + 1, maxSteps));
+    console.log('nextStep called. Current step:', currentStep, 'Max steps:', maxSteps, 'Voice steps length:', voiceSteps.length);
+    setCurrentStep(prev => {
+      const newStep = Math.min(prev + 1, maxSteps);
+      console.log('Setting step from', prev, 'to', newStep);
+      return newStep;
+    });
   };
 
   const prevStep = () => {
