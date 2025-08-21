@@ -7,6 +7,8 @@ import { BrandsStep } from '@/components/BrandsStep';
 import { ConfigStep } from '@/components/ConfigStep';
 import { SimulatorStep } from '@/components/SimulatorStep';
 import { DeployStep } from '@/components/DeployStep';
+import { WhatsAppClinicAreasStep } from '@/components/WhatsAppClinicAreasStep';
+import { WhatsAppFlowConnectionStep } from '@/components/WhatsAppFlowConnectionStep';
 import { VoiceClinicAreasStep } from '@/components/voice/VoiceClinicAreasStep';
 import { VoiceFlowConnectionStep } from '@/components/voice/VoiceFlowConnectionStep';
 
@@ -26,6 +28,8 @@ interface AppConfig {
   knowledge?: any;
   brands?: string[];
   config?: any;
+  clinicAreas?: any;
+  flowConnections?: any;
 }
 
 interface VoiceConfig {
@@ -54,6 +58,8 @@ const Index = () => {
     'Conocimiento', 
     'Marcas',
     'Configuración',
+    'Áreas de la Clínica',
+    'Flujo de Comunicación',
     'Simulador',
     'Despliegue'
   ];
@@ -210,6 +216,47 @@ const Index = () => {
           return (
             <StepContainer 
               currentStep={currentStep} 
+              title="Crea las áreas de tu clínica"
+              subtitle="Define las áreas internas donde podrías redirigir a tus clientes"
+              steps={whatsappSteps}
+              onBack={resetFlow}
+            >
+              <WhatsAppClinicAreasStep 
+                onNext={(clinicAreas) => {
+                  updateConfig('clinicAreas', clinicAreas);
+                  nextStep();
+                }}
+                onBack={prevStep}
+                guidedMode={true}
+              />
+            </StepContainer>
+          );
+
+        case 5:
+          return (
+            <StepContainer 
+              currentStep={currentStep} 
+              title="Define el flujo entre recepción y tus áreas"
+              subtitle="Conecta la recepción con las áreas que creaste"
+              steps={whatsappSteps}
+              onBack={resetFlow}
+            >
+              <WhatsAppFlowConnectionStep 
+                onNext={(flowConnections) => {
+                  updateConfig('flowConnections', flowConnections);
+                  nextStep();
+                }}
+                onBack={prevStep}
+                areas={appConfig.clinicAreas || []}
+                guidedMode={true}
+              />
+            </StepContainer>
+          );
+
+        case 6:
+          return (
+            <StepContainer 
+              currentStep={currentStep} 
               title="Prueba tu agente"
               subtitle="Simula conversaciones para verificar el funcionamiento"
               steps={whatsappSteps}
@@ -223,7 +270,7 @@ const Index = () => {
             </StepContainer>
           );
 
-        case 5:
+        case 7:
           return (
             <StepContainer 
               currentStep={currentStep} 
