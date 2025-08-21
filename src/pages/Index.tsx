@@ -7,6 +7,8 @@ import { BrandsStep } from '@/components/BrandsStep';
 import { ConfigStep } from '@/components/ConfigStep';
 import { SimulatorStep } from '@/components/SimulatorStep';
 import { DeployStep } from '@/components/DeployStep';
+import { VoiceClinicAreasStep } from '@/components/voice/VoiceClinicAreasStep';
+import { VoiceFlowConnectionStep } from '@/components/voice/VoiceFlowConnectionStep';
 
 // Voice Agent Steps
 import { VoiceObjectiveStep } from '@/components/voice/VoiceObjectiveStep';
@@ -31,6 +33,8 @@ interface VoiceConfig {
   flowPreview?: any;
   voiceSettings?: any;
   knowledge?: any;
+  clinicAreas?: any;
+  flowConnections?: any;
   providers?: any;
   phone?: any;
   callLogs?: any;
@@ -59,6 +63,8 @@ const Index = () => {
     'Vista Previa del Flujo',
     'Configuración de Voz',
     'Conocimiento',
+    'Áreas de la Clínica',
+    'Flujo de Comunicación',
     'Conexiones',
     'Configuración Telefónica',
     'Despliegue',
@@ -335,6 +341,47 @@ const Index = () => {
           return (
             <StepContainer 
               currentStep={currentStep} 
+              title={guidedMode ? "Áreas de tu Clínica" : "Configuración de Áreas"}
+              subtitle={guidedMode ? "Define las áreas internas donde podrías redirigir a tus clientes" : "Configura las áreas y responsables de tu clínica"}
+              steps={voiceSteps}
+              onBack={resetFlow}
+            >
+              <VoiceClinicAreasStep 
+                onNext={(clinicAreas) => {
+                  updateVoiceConfig('clinicAreas', clinicAreas);
+                  nextStep();
+                }}
+                onBack={prevStep}
+                guidedMode={guidedMode}
+              />
+            </StepContainer>
+          );
+
+        case 5:
+          return (
+            <StepContainer 
+              currentStep={currentStep} 
+              title={guidedMode ? "Flujo de Comunicación" : "Configuración de Flujos"}
+              subtitle={guidedMode ? "Conecta la recepción con las áreas que creaste" : "Define cómo se conectan las áreas de tu clínica"}
+              steps={voiceSteps}
+              onBack={resetFlow}
+            >
+              <VoiceFlowConnectionStep 
+                onNext={(flowConnections) => {
+                  updateVoiceConfig('flowConnections', flowConnections);
+                  nextStep();
+                }}
+                onBack={prevStep}
+                areas={voiceConfig.clinicAreas || []}
+                guidedMode={guidedMode}
+              />
+            </StepContainer>
+          );
+
+        case 6:
+          return (
+            <StepContainer 
+              currentStep={currentStep} 
               title={guidedMode ? "Conexiones y Servicios" : "Proveedores y Conexiones"}
               subtitle={guidedMode ? "Activamos automáticamente los mejores servicios" : "Configura las conexiones con servicios de IA y voz"}
               steps={voiceSteps}
@@ -351,7 +398,7 @@ const Index = () => {
             </StepContainer>
           );
 
-        case 5:
+        case 7:
           return (
             <StepContainer 
               currentStep={currentStep} 
@@ -371,7 +418,7 @@ const Index = () => {
             </StepContainer>
           );
 
-        case 6:
+        case 8:
           return (
             <StepContainer 
               currentStep={currentStep} 
@@ -389,7 +436,7 @@ const Index = () => {
             </StepContainer>
           );
 
-        case 7:
+        case 9:
           return (
             <StepContainer 
               currentStep={currentStep} 
